@@ -88,8 +88,20 @@ function optionChanged(subId) {
     console.log(ploty);
     console.log(plotz);
 
+    // get data for bubble chart (all data points, otuIds remain as integer)
+    let bubx = [];
+    let buby = [];
+    let bubz = [];
+    for (i in sorted_data) {
+      let bdict = sorted_data[i];
+      bubx.push(bdict.item_otuId);
+      buby.push(bdict.item_sample);
+      bubz.push(bdict.item_otuLabel);
+    }
+
     // use otu_ids as labels (x axis)
-    // use sample_values as values for the bar chart (y axis)
+    // use sample_values as values for (y axis) and marker size
+    // use otuIds as scale for colour
     // use otu_labels as hovertext for chart
     var trace1 = {
       type: "bar",
@@ -100,6 +112,33 @@ function optionChanged(subId) {
     };
     var data = [trace1];
     Plotly.newPlot("bar", data);
+
+    var desired_maximum_marker_size = 10;
+    console.log(bubx);
+
+    var trace2 = {
+      x: bubx,
+      y: buby,
+      text: bubz,
+      mode: "markers",
+      marker: {
+        size: buby,
+        sizeref: 0.05,
+        // sizeref: (2.0 * Math.max(buby)) / desired_maximum_marker_size ** 2,
+        sizemode: "area",
+        color: bubx,
+        colorscale: "Bluered",
+      },
+    };
+    var bubble_data = [trace2];
+
+    var layout2 = {
+      showlegend: false,
+      height: 600,
+      width: 1000,
+    };
+
+    Plotly.newPlot("bubble", bubble_data, layout2);
   });
 }
 // event listener dropdown menu
