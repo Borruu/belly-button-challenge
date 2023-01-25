@@ -4,9 +4,21 @@ const url =
 const dataPromise = d3.json(url);
 console.log("Data Promise: ", dataPromise);
 
-dataPromise.then(function (data) {
-  console.log(data);
-});
+// dataPromise.then(function (data) {
+//   console.log(data);
+// });
+
+let output = {
+  metadata: [],
+  names: [],
+  samples: [],
+};
+// dataPromise.then(function (data) {
+//   (output.metadata = data[metadata]),
+//     (output.names = data[names]),
+//     (output.samples = data[samples]);
+//   console.log(output);
+// });
 
 // read subject names from dataset and reflect these in the dropdown menu
 dataPromise.then(function (data) {
@@ -33,32 +45,66 @@ function optionChanged(subId) {
     let nameIn = d3.select("#selDataset").value;
     console.log(nameIn);
     let sample_dict = sampleArray.filter(function findSubject(subject) {
-      // console.log(subject.id == findName);
       return subject.id == findName;
     });
-    console.log(sample_dict);
+    let sample_data = sample_dict[0];
+    console.log(sample_data);
 
-    let samId = sample_dict.id;
-    let samV = sample_dict.sample_values;
-    let otuIds = sample_dict.otu_ids;
-    let otuLabels = sample_dict.otu_labels;
+    let samId = Object.values(sample_data.id);
+    let samV = Object.values(sample_data.sample_values);
+    let otuIds = Object.values(sample_data.otu_ids);
+    let otuLabels = Object.values(sample_data.otu_labels);
+    console.log(`samId: ${samId}`);
+    console.log(`samV: ${samV}`);
+    console.log(`otuIds: ${otuIds}`);
+    console.log(`otuLabels: ${otuLabels}`);
+    let data_restructured = [];
+    for (i in samV) {
+      let x = samV[i];
+      console.log(x);
+      let y = otuIds[i];
+      let z = otuLabels[i];
+      let item_dict = { item_sample: x, item_otuId: y, item_otuLabel: z };
+      data_restructured.push(item_dict);
+    }
+
+    let sorted_data = data_restructured.sort(
+      (a, b) => b.item_sample - a.item_sample
+    );
+
+    let sliced_data = sorted_data.slice(0, 10);
+    console.log(sliced_data);
+    let rev_sliced_data = sliced_data.reverse();
+    let plotx = [];
+    let ploty = [];
+    let plotz = [];
+    for (i in rev_sliced_data) {
+      let dict = rev_sliced_data[i];
+      plotx.push(dict.item_sample);
+      ploty.push(`OTU ID ${dict.item_otuId}`);
+      plotz.push(dict.item_otuLabel);
+    }
+    console.log(plotx);
+    console.log(ploty);
+    console.log(plotz);
+
     // use otu_ids as labels (x axis)
     // use sample_values as values for the bar chart (y axis)
     // use otu_labels as hovertext for chart
     var trace1 = {
-      x: otuIds,
-      y: samV,
       type: "bar",
+      x: plotx,
+      y: ploty,
       orientation: "h",
-      text: otuLabels,
+      text: plotz,
     };
     var data = [trace1];
     Plotly.newPlot("bar", data);
   });
 }
 // event listener dropdown menu
-let drop = d3.selectAll("#selDataset");
-drop.on("change", optionChanged);
+// let drop = d3.selectAll("#selDataset");
+// drop.on("change", optionChanged);
 
 // sample_dict
 
@@ -85,3 +131,5 @@ drop.on("change", optionChanged);
 // Uncaught TypeError: Cannot convert undefined or null to object
 // at Function.values (<anonymous>)
 // at init (app.js:21:25)
+
+//
