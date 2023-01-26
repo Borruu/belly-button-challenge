@@ -40,10 +40,38 @@ function optionChanged(subId) {
   var findName = subId;
   // let nameIn = d3.select(this.text);
   dataPromise.then(function (data) {
+    // Access key 'metadata'
+    let metaArray = Object.values(data.metadata);
+    // Isolate individual subject's demographic information
+    let meta_dict = metaArray.filter(function findSubject(subject) {
+      return subject.id == findName;
+    });
+    let demo_data = Object.values(meta_dict[0]);
+    let age = demo_data[3];
+    let bbtype = demo_data[5];
+    let ethnicity = demo_data[1];
+    let gender = demo_data[2];
+    let location = demo_data[4];
+    let wfreq = demo_data[6];
+
+    // <div id="sample-metadata" class="panel-body">CONTENT GOES HERE</div>
+    // </div>
+    // add demographic info in panel
+    let pbody = d3.select("#sample-metadata");
+    let idRow = pbody.append("div").text(`id: ${findName}`);
+    let ethRow = pbody.append("div").text(`Ethnicity: ${ethnicity}`);
+    let genderRow = pbody.append("div").text(`Gender: ${gender}`);
+    let ageRow = pbody.append("div").text(`Age: ${age}`);
+    let locationRow = pbody.append("div").text(`Location: ${location}`);
+    let bbtypeRow = pbody.append("div").text(`Belly button type: ${bbtype}`);
+    let wfreqRow = pbody.append("div").text(`Wash frequency: ${wfreq}`);
+
+    // Access key 'samples'
     let sampleArray = Object.values(data.samples);
     console.log(sampleArray);
     let nameIn = d3.select("#selDataset").value;
     console.log(nameIn);
+    // Isolate individual subject's sample information
     let sample_dict = sampleArray.filter(function findSubject(subject) {
       return subject.id == findName;
     });
