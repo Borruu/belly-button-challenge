@@ -58,13 +58,61 @@ function optionChanged(subId) {
     // </div>
     // add demographic info in panel
     let pbody = d3.select("#sample-metadata");
-    let idRow = pbody.append("div").text(`id: ${findName}`);
-    let ethRow = pbody.append("div").text(`Ethnicity: ${ethnicity}`);
-    let genderRow = pbody.append("div").text(`Gender: ${gender}`);
-    let ageRow = pbody.append("div").text(`Age: ${age}`);
-    let locationRow = pbody.append("div").text(`Location: ${location}`);
-    let bbtypeRow = pbody.append("div").text(`Belly button type: ${bbtype}`);
-    let wfreqRow = pbody.append("div").text(`Wash frequency: ${wfreq}`);
+    let idRow = pbody.append("div").attr("class", "key-text").text(`id: `);
+    // ${findName}`);
+    let idValue = idRow
+      .append("span")
+      .attr("class", "value-text")
+      .text(findName);
+
+    let ethRow = pbody
+      .append("div")
+      .attr("class", "key-text")
+      .text(`Ethnicity: `);
+    // ${ethnicity}`);
+    let ethValue = ethRow
+      .append("span")
+      .attr("class", "value-text")
+      .text(ethnicity);
+
+    let genderRow = pbody
+      .append("div")
+      .attr("class", "key-text")
+      .text(`Gender: `);
+    let genValue = genderRow
+      .append("span")
+      .attr("class", "value-text")
+      .text(gender);
+
+    let ageRow = pbody.append("div").attr("class", "key-text").text(`Age: `);
+    let ageValue = ageRow.append("span").attr("class", "value-text").text(age);
+
+    let locationRow = pbody
+      .append("div")
+      .attr("class", "key-text")
+      .text(`Location: `);
+    let locValue = locationRow
+      .append("span")
+      .attr("class", "value-text")
+      .text(location);
+
+    let bbtypeRow = pbody
+      .append("div")
+      .attr("class", "key-text")
+      .text(`Belly button type: `);
+    let bbtValue = bbtypeRow
+      .append("span")
+      .attr("class", "value-text")
+      .text(bbtype);
+
+    let wfreqRow = pbody
+      .append("div")
+      .attr("class", "key-text")
+      .text(`Wash frequency: `);
+    let wfValue = wfreqRow
+      .append("span")
+      .attr("class", "value-text")
+      .text(wfreq);
 
     // Access key 'samples'
     let sampleArray = Object.values(data.samples);
