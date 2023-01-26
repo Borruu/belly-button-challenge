@@ -113,7 +113,7 @@ function optionChanged(subId) {
     var data = [trace1];
     Plotly.newPlot("bar", data);
 
-    var desired_maximum_marker_size = 10;
+    // var desired_maximum_marker_size = 10;
     console.log(bubx);
 
     var trace2 = {
@@ -134,8 +134,10 @@ function optionChanged(subId) {
 
     var layout2 = {
       showlegend: false,
+      plot_bgcolor: "#F8F9EA",
       height: 600,
       width: 1000,
+      xaxis: { title: { text: "OTU ID" } },
     };
 
     Plotly.newPlot("bubble", bubble_data, layout2);
