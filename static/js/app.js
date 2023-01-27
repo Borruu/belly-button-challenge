@@ -145,6 +145,39 @@ function changeAll(newName, data) {
     },
   };
   Plotly.restyle("bubble", newTrace2);
+  // RESTYLE GAUGE
+  var newgData = [
+    {
+      domain: { x: [0, 1], y: [0, 1] },
+      value: wfreq,
+      title: { text: "Wash frequency per week" },
+      type: "indicator",
+      mode: "gauge+number",
+      gauge: {
+        axis: {
+          range: [null, 9],
+          tickmode: "array",
+          // ticks: "inside",
+          ticktext: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+          tickvals: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+        },
+        bar: { color: "aqua" },
+        steps: [
+          { range: [0, 1], color: "#b3db5d" },
+          { range: [1, 2], color: "#70cd6d" },
+          { range: [2, 3], color: "#00bc81" },
+          { range: [3, 4], color: "#00a892" },
+          { range: [4, 5], color: "#00939d" },
+          { range: [5, 6], color: "#007c9f" },
+          { range: [6, 7], color: "#006597" },
+          { range: [7, 8], color: "#004d85" },
+          { range: [8, 9], color: "#16366b" },
+        ],
+      },
+    },
+  ];
+
+  Plotly.restyle("gauge", "value", wfreq);
 }
 
 // define function init
@@ -233,8 +266,7 @@ function init(subId, data) {
   // Access key 'samples'
   let sampleArray = Object.values(data.samples);
   console.log(sampleArray);
-  let nameIn = d3.select("#selDataset").value;
-  console.log(nameIn);
+
   // Isolate individual subject's sample information
   let sample_dict = sampleArray.filter(function findSubject(subject) {
     return subject.id == findName;
@@ -322,10 +354,46 @@ function init(subId, data) {
   var layout2 = {
     showlegend: false,
     plot_bgcolor: "#F8F9EA",
-    height: 600,
-    width: 1000,
+    // height: 600,
+    // width: 1000,
     xaxis: { title: { text: "OTU ID" } },
   };
 
   Plotly.newPlot("bubble", bubble_data, layout2);
+
+  var gData = [
+    {
+      domain: { x: [0, 1], y: [0, 1] },
+      value: wfreq,
+      title: { text: "Wash frequency per week" },
+      type: "indicator",
+      mode: "gauge+number",
+      gauge: {
+        axis: {
+          range: [null, 9],
+          tickmode: "array",
+          // ticks: "inside",
+          ticktext: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+          tickvals: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+        },
+        bar: { color: "aqua" },
+        steps: [
+          { range: [0, 1], color: "#b3db5d" },
+          { range: [1, 2], color: "#70cd6d" },
+          { range: [2, 3], color: "#00bc81" },
+          { range: [3, 4], color: "#00a892" },
+          { range: [4, 5], color: "#00939d" },
+          { range: [5, 6], color: "#007c9f" },
+          { range: [6, 7], color: "#006597" },
+          { range: [7, 8], color: "#004d85" },
+          { range: [8, 9], color: "#16366b" },
+        ],
+      },
+    },
+  ];
+  // "#FDD5FF"
+  var gLayout = {
+    margin: { t: 0, b: 0 },
+  };
+  Plotly.newPlot("gauge", gData, gLayout);
 }
