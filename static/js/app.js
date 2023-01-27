@@ -4,23 +4,13 @@ const url =
 const dataPromise = d3.json(url);
 console.log("Data Promise: ", dataPromise);
 
-// dataPromise.then(function (data) {
-//   console.log(data);
-// });
-
 let output = {
   metadata: [],
   names: [],
   samples: [],
 };
-// dataPromise.then(function (data) {
-//   (output.metadata = data[metadata]),
-//     (output.names = data[names]),
-//     (output.samples = data[samples]);
-//   console.log(output);
-// });
 
-// read subject names from dataset and reflect these in the dropdown menu
+// read subject names from dataset and reflect these in the dropdown menu. Call function init.
 dataPromise.then(function (data) {
   let nameList = Object.values(data.names);
   console.log(nameList);
@@ -33,14 +23,14 @@ dataPromise.then(function (data) {
   init(940, data);
 });
 
-// define function optionChanged. Data promise.
+// define function optionChanged. Data promise then call changeAll function.
 function optionChanged(subId) {
   var newName = subId;
   dataPromise.then(function (data) {
     changeAll(newName, data);
   });
 }
-// define function changeAll to update all information.
+// define function changeAll to update all information when a new subject is selected
 function changeAll(newName, data) {
   // Access key 'metadata'
   let metaArray = Object.values(data.metadata);
@@ -55,7 +45,7 @@ function changeAll(newName, data) {
   let gender = demo_data[2];
   let location = demo_data[4];
   let wfreq = demo_data[6];
-
+  // update demographic information html text
   let idValue = d3.select("#idV");
   idValue.text(newName);
 
@@ -76,7 +66,7 @@ function changeAll(newName, data) {
 
   let wfValue = d3.select("#idW");
   wfValue.text(wfreq);
-  // GET DATA FOR BAR CHART
+  // get updated data for bar chart
   // Access key 'samples'
   let sampleArray = Object.values(data.samples);
   // Isolate individual subject's sample information
@@ -113,6 +103,7 @@ function changeAll(newName, data) {
     ploty.push(`OTU ID ${dict.item_otuId}`);
     plotz.push(dict.item_otuLabel);
   }
+  // restyle bar chart
   var newTrace = {
     type: "bar",
     x: [plotx],
@@ -121,7 +112,7 @@ function changeAll(newName, data) {
     text: [plotz],
   };
   Plotly.restyle("bar", newTrace);
-  // GET DATA FOR BUBBLE CHART (all data points, otuIds remain as integer)
+  // get updated data for bubble chart (all data points, otuIds remain as integer)
   let bubx = [];
   let buby = [];
   let bubz = [];
@@ -131,6 +122,7 @@ function changeAll(newName, data) {
     buby.push(bdict.item_sample);
     bubz.push(bdict.item_otuLabel);
   }
+  // restyle bubble chart
   var newTrace2 = {
     x: [bubx],
     y: [buby],
@@ -145,7 +137,7 @@ function changeAll(newName, data) {
     },
   };
   Plotly.restyle("bubble", newTrace2);
-  // RESTYLE GAUGE
+  // restyle gauge chart
   var newgData = [
     {
       domain: { x: [0, 1], y: [0, 1] },
@@ -157,7 +149,6 @@ function changeAll(newName, data) {
         axis: {
           range: [null, 9],
           tickmode: "array",
-          // ticks: "inside",
           ticktext: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
           tickvals: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
         },
@@ -176,23 +167,19 @@ function changeAll(newName, data) {
       },
     },
   ];
-
   Plotly.restyle("gauge", "value", wfreq);
 }
 
 // define function init
 function init(subId, data) {
-  console.log(subId);
   var findName = subId;
-  // let nameIn = d3.select(this.text);
-  // dataPromise.then(function (data) {
   // Access key 'metadata'
   let metaArray = Object.values(data.metadata);
   // Isolate individual subject's demographic information
   let meta_dict = metaArray.filter(function findSubject(subject) {
     return subject.id == findName;
   });
-  // save values to variables
+  // save demographic values to variables
   let demo_data = Object.values(meta_dict[0]);
   let age = demo_data[3];
   let bbtype = demo_data[5];
@@ -200,9 +187,6 @@ function init(subId, data) {
   let gender = demo_data[2];
   let location = demo_data[4];
   let wfreq = demo_data[6];
-
-  // <div id="sample-metadata" class="panel-body">CONTENT GOES HERE</div></div>
-
   // add html & demographic info in panel
   let pbody = d3.select("#sample-metadata");
   var idRow = pbody.append("div").attr("class", "key-text").text(`id: `);
@@ -262,26 +246,18 @@ function init(subId, data) {
     .attr("class", "value-text")
     .attr("id", "idW")
     .text(wfreq);
-
   // Access key 'samples'
   let sampleArray = Object.values(data.samples);
   console.log(sampleArray);
-
   // Isolate individual subject's sample information
   let sample_dict = sampleArray.filter(function findSubject(subject) {
     return subject.id == findName;
   });
   let sample_data = sample_dict[0];
-  console.log(sample_data);
-
-  let samId = Object.values(sample_data.id);
   let samV = Object.values(sample_data.sample_values);
   let otuIds = Object.values(sample_data.otu_ids);
   let otuLabels = Object.values(sample_data.otu_labels);
-  console.log(`samId: ${samId}`);
-  console.log(`samV: ${samV}`);
-  console.log(`otuIds: ${otuIds}`);
-  console.log(`otuLabels: ${otuLabels}`);
+  // restructure data into array of single-bacterium objects
   let data_restructured = [];
   for (i in samV) {
     let x = samV[i];
@@ -291,7 +267,7 @@ function init(subId, data) {
     let item_dict = { item_sample: x, item_otuId: y, item_otuLabel: z };
     data_restructured.push(item_dict);
   }
-
+  // sort data by bacteria count descending
   let sorted_data = data_restructured.sort(
     (a, b) => b.item_sample - a.item_sample
   );
@@ -308,10 +284,6 @@ function init(subId, data) {
     ploty.push(`OTU ID ${dict.item_otuId}`);
     plotz.push(dict.item_otuLabel);
   }
-  console.log(plotx);
-  console.log(ploty);
-  console.log(plotz);
-
   // get data for bubble chart (all data points, otuIds remain as integer)
   let bubx = [];
   let buby = [];
@@ -322,7 +294,7 @@ function init(subId, data) {
     buby.push(bdict.item_sample);
     bubz.push(bdict.item_otuLabel);
   }
-
+  // create bar chart
   var trace1 = {
     type: "bar",
     x: plotx,
@@ -332,10 +304,7 @@ function init(subId, data) {
   };
   var barData = [trace1];
   Plotly.newPlot("bar", barData);
-
-  // var desired_maximum_marker_size = 10;
-  console.log(bubx);
-
+  // create bubble chart
   var trace2 = {
     x: bubx,
     y: buby,
@@ -350,17 +319,13 @@ function init(subId, data) {
     },
   };
   var bubble_data = [trace2];
-
   var layout2 = {
     showlegend: false,
     plot_bgcolor: "#F8F9EA",
-    // height: 600,
-    // width: 1000,
     xaxis: { title: { text: "OTU ID" } },
   };
-
   Plotly.newPlot("bubble", bubble_data, layout2);
-
+  // create gauge chart
   var gData = [
     {
       domain: { x: [0, 1], y: [0, 1] },
@@ -372,7 +337,6 @@ function init(subId, data) {
         axis: {
           range: [null, 9],
           tickmode: "array",
-          // ticks: "inside",
           ticktext: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
           tickvals: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
         },
@@ -391,7 +355,6 @@ function init(subId, data) {
       },
     },
   ];
-  // "#FDD5FF"
   var gLayout = {
     margin: { t: 0, b: 0 },
   };
